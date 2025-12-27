@@ -3,94 +3,538 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>GearGuard - Login</title>
-    <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; }
-        body { font-family: Arial, sans-serif; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); min-height: 100vh; display: flex; align-items: center; justify-content: center; }
-        .container { background: white; padding: 40px; border-radius: 10px; box-shadow: 0 15px 35px rgba(0,0,0,0.1); width: 400px; }
-        .logo { text-align: center; margin-bottom: 30px; }
-        .logo h1 { color: #333; font-size: 2.5em; margin-bottom: 5px; }
-        .logo p { color: #666; font-size: 0.9em; }
-        .form-group { margin-bottom: 20px; }
-        .form-group input { width: 100%; padding: 12px; border: 2px solid #ddd; border-radius: 5px; font-size: 16px; }
-        .form-group input:focus { outline: none; border-color: #667eea; }
-        .btn-primary { width: 100%; padding: 12px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; border: none; border-radius: 5px; font-size: 16px; cursor: pointer; }
-        .btn-primary:hover { transform: translateY(-2px); }
-        .switch-form { text-align: center; margin-top: 20px; color: #666; }
-        .switch-form a { color: #667eea; text-decoration: none; }
-        .hidden { display: none; }
-    </style>
+    <title>Enterprise Maintenance Management System</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🔧</text></svg>">
 </head>
 <body>
-    <div class="container">
-        <div class="logo">
-            <h1>GearGuard</h1>
-            <p>The Ultimate Maintenance Tracker</p>
-        </div>
-        
-        <form id="loginForm">
-            <h2 style="text-align: center; margin-bottom: 30px; color: #333;">Login</h2>
-            <div class="form-group">
-                <input type="email" id="loginEmail" placeholder="Email" required>
-            </div>
-            <div class="form-group">
-                <input type="password" id="loginPassword" placeholder="Password" required>
-            </div>
-            <button type="submit" class="btn-primary">Login</button>
-            <p class="switch-form">Don't have an account? <a href="#" onclick="showSignup()">Sign Up</a></p>
-        </form>
 
-        <form id="signupForm" class="hidden">
-            <h2 style="text-align: center; margin-bottom: 30px; color: #333;">Sign Up</h2>
-            <div class="form-group">
-                <input type="text" id="signupName" placeholder="Full Name" required>
-            </div>
-            <div class="form-group">
-                <input type="email" id="signupEmail" placeholder="Email" required>
-            </div>
-            <div class="form-group">
-                <input type="password" id="signupPassword" placeholder="Password" required>
-            </div>
-            <div class="form-group">
-                <input type="password" id="confirmPassword" placeholder="Confirm Password" required>
-            </div>
-            <button type="submit" class="btn-primary">Sign Up</button>
-            <p class="switch-form">Already have an account? <a href="#" onclick="showLogin()">Login</a></p>
-        </form>
+<!-- LOGIN/SIGNUP SECTION -->
+<div id="authSection" class="container">
+    <div class="card">
+        <h2>Login</h2>
+        <input type="email" id="loginEmail" placeholder="Email ID">
+        <input type="password" id="loginPassword" placeholder="Password">
+        <button onclick="login()">Sign In</button>
+        <p class="link">Forgot Password?</p>
     </div>
 
-    <script>
-        function showLogin() {
-            document.getElementById('loginForm').classList.remove('hidden');
-            document.getElementById('signupForm').classList.add('hidden');
-        }
-        function showSignup() {
-            document.getElementById('loginForm').classList.add('hidden');
-            document.getElementById('signupForm').classList.remove('hidden');
-        }
-        
-        document.getElementById('loginForm').onsubmit = function(e) {
-            e.preventDefault();
-            const email = document.getElementById('loginEmail').value;
-            const password = document.getElementById('loginPassword').value;
-            if (email && password) {
-                localStorage.setItem('isLoggedIn', 'true');
-                localStorage.setItem('userName', email.split('@')[0]);
-                window.location.href = 'dashboard.html';
-            }
-        };
-        
-        document.getElementById('signupForm').onsubmit = function(e) {
-            e.preventDefault();
-            const name = document.getElementById('signupName').value;
-            const email = document.getElementById('signupEmail').value;
-            const password = document.getElementById('signupPassword').value;
-            const confirm = document.getElementById('confirmPassword').value;
-            if (name && email && password && confirm && password === confirm) {
-                alert('Account created! Please login.');
-                showLogin();
-            }
-        };
-    </script>
+    <div class="card">
+        <h2>Sign Up</h2>
+        <input type="text" id="name" placeholder="Name">
+        <input type="email" id="signupEmail" placeholder="Email ID">
+        <input type="password" id="signupPassword" placeholder="Password">
+        <input type="password" id="confirmPassword" placeholder="Re-enter Password">
+        <button onclick="signup()">Sign Up</button>
+    </div>
+</div>
+
+<!-- DASHBOARD SECTION -->
+<div id="dashboardSection" class="dashboard-section" style="display: none;">
+    <!-- TOP NAV -->
+    <div class="navbar">
+        <div class="nav-left">
+            <h2>🔧 Dashboard</h2>
+            <div class="nav-tabs">
+                <span class="tab active" onclick="switchTab('maintenance')">Maintenance</span>
+                <span class="tab" onclick="switchTab('dashboard')">Dashboard</span>
+                <span class="tab" onclick="switchTab('calendar')">Maintenance Calendar</span>
+                <span class="tab" onclick="switchTab('equipment')">Equipment</span>
+                <span class="tab" onclick="switchTab('reporting')">Reporting</span>
+            </div>
+        </div>
+        <div class="nav-right">
+            <input type="text" placeholder="Search...">
+        </div>
+    </div>
+
+    <!-- MAINTENANCE TAB CONTENT -->
+    <div id="maintenanceContent" class="tab-content active">
+        <div class="dashboard-cards">
+            <div class="card red">
+                <h3>Critical Equipment</h3>
+                <p class="card-number">5 Units</p>
+                <small>(Health < 30%)</small>
+            </div>
+            <div class="card blue">
+                <h3>Technician</h3>
+                <p class="card-number">Rakshit</p>
+                <small>85% Utilized<br>(Assign Carefully)</small>
+            </div>
+            <div class="card green">
+                <h3>Open Requests</h3>
+                <p class="card-number">12 Pending</p>
+                <small>3 Overdue</small>
+            </div>
+        </div>
+
+        <div class="table-container">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Subject</th>
+                        <th>Employee</th>
+                        <th>Technician</th>
+                        <th>Category</th>
+                        <th>Company</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Test activity</td>
+                        <td>Mitchell Admin</td>
+                        <td>Aka Foster</td>
+                        <td>computer</td>
+                        <td>My company</td>
+                    </tr>
+                    <tr>
+                        <td>System Issue</td>
+                        <td>System Admin</td>
+                        <td>Graceful</td>
+                        <td>Hardware</td>
+                        <td>My company</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- MAINTENANCE REQUEST FORM -->
+    <div id="requestForm" class="form-container" style="display: none;">
+        <div class="form-header">
+            <h2>Maintenance Requests</h2>
+            <button class="btn-new" onclick="showRequestForm()">New</button>
+        </div>
+        <div class="form-content">
+            <div class="form-left">
+                <div class="form-group">
+                    <label>Subject?</label>
+                    <input type="text" id="subject" value="Test activity">
+                </div>
+                <div class="form-group">
+                    <label>Created By</label>
+                    <input type="text" value="Mitchell Admin">
+                </div>
+                <div class="form-group">
+                    <label>Maintenance For</label>
+                    <input type="text" value="Equipment">
+                </div>
+                <div class="form-group">
+                    <label>Category</label>
+                    <input type="text" value="Computers">
+                </div>
+                <div class="form-group">
+                    <label>Request Date?</label>
+                    <input type="date" value="2025-12-18">
+                </div>
+                <div class="form-group">
+                    <label>Maintenance Type</label>
+                    <div class="radio-group">
+                        <input type="radio" name="maintenanceType" value="corrective" checked> Corrective<br>
+                        <input type="radio" name="maintenanceType" value="preventive"> Preventive
+                    </div>
+                </div>
+                <div class="form-tabs">
+                    <button class="tab-btn active" onclick="switchFormTab('notes')">Notes</button>
+                    <button class="tab-btn" onclick="switchFormTab('instructions')">Instructions</button>
+                </div>
+                <div class="form-actions">
+                    <button type="button" class="btn-submit" onclick="submitMaintenanceRequest()">Submit Request</button>
+                    <button type="button" class="btn-cancel" onclick="backToMaintenanceList()">Cancel</button>
+                </div>
+            </div>
+            <div class="form-right">
+                <div class="form-group">
+                    <label>Team</label>
+                    <input type="text" value="Internal Maintenance">
+                </div>
+                <div class="form-group">
+                    <label>Technician</label>
+                    <input type="text" value="Aka Foster">
+                </div>
+                <div class="form-group">
+                    <label>Scheduled Date?</label>
+                    <input type="datetime-local" value="2025-12-28T14:30">
+                </div>
+                <div class="form-group">
+                    <label>Duration</label>
+                    <input type="text" value="00.00 hours">
+                </div>
+                <div class="form-group">
+                    <label>Priority</label>
+                    <select>
+                        <option>Normal</option>
+                        <option>High</option>
+                        <option>Critical</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Company</label>
+                    <input type="text" value="My Company (San Francisco)">
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- CALENDAR TAB CONTENT -->
+    <div id="calendarContent" class="tab-content">
+        <div class="calendar-header">
+            <button onclick="prevMonth()">‹</button>
+            <h2 id="monthYear">December 2025</h2>
+            <button onclick="nextMonth()">›</button>
+        </div>
+        <div class="calendar-month">
+            <div class="calendar-weekdays">
+                <div>Sun</div>
+                <div>Mon</div>
+                <div>Tue</div>
+                <div>Wed</div>
+                <div>Thu</div>
+                <div>Fri</div>
+                <div>Sat</div>
+            </div>
+            <div class="calendar-days">
+                <div class="calendar-day other-month">30</div>
+                <div class="calendar-day">1</div>
+                <div class="calendar-day">2</div>
+                <div class="calendar-day">3</div>
+                <div class="calendar-day">4</div>
+                <div class="calendar-day">5</div>
+                <div class="calendar-day">6</div>
+                <div class="calendar-day">7</div>
+                <div class="calendar-day">8</div>
+                <div class="calendar-day">9</div>
+                <div class="calendar-day">10</div>
+                <div class="calendar-day">11</div>
+                <div class="calendar-day">12</div>
+                <div class="calendar-day">13</div>
+                <div class="calendar-day">14</div>
+                <div class="calendar-day">15</div>
+                <div class="calendar-day">16</div>
+                <div class="calendar-day">17</div>
+                <div class="calendar-day today">18</div>
+                <div class="calendar-day">19</div>
+                <div class="calendar-day">20</div>
+                <div class="calendar-day">21</div>
+                <div class="calendar-day">22</div>
+                <div class="calendar-day">23</div>
+                <div class="calendar-day">24</div>
+                <div class="calendar-day">25</div>
+                <div class="calendar-day">26</div>
+                <div class="calendar-day">27</div>
+                <div class="calendar-day">28</div>
+                <div class="calendar-day">29</div>
+                <div class="calendar-day">30</div>
+                <div class="calendar-day">31</div>
+                <div class="calendar-day other-month">1</div>
+                <div class="calendar-day other-month">2</div>
+                <div class="calendar-day other-month">3</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- EQUIPMENT TAB CONTENT -->
+    <div id="equipmentContent" class="tab-content">
+        <div class="section-header">
+            <h2>Equipment</h2>
+            <button class="btn-new" onclick="showEquipmentForm()">New</button>
+        </div>
+        <div class="table-container">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Equipment Name</th>
+                        <th>Employee</th>
+                        <th>Department</th>
+                        <th>Serial Number</th>
+                        <th>Technician</th>
+                        <th>Equipment Category</th>
+                        <th>Company</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Samsung Monitor 15"</td>
+                        <td>Tejas Modi</td>
+                        <td>Admin</td>
+                        <td>MT/125/22798837</td>
+                        <td>Mitchell Admin</td>
+                        <td>Monitors</td>
+                        <td>My Company (San Francisco)</td>
+                    </tr>
+                    <tr>
+                        <td>Acer Laptop</td>
+                        <td>Bhavik P</td>
+                        <td>Technician</td>
+                        <td>MT/122/11112222</td>
+                        <td>Marc Demo</td>
+                        <td>Computers</td>
+                        <td>My Company (San Francisco)</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- EQUIPMENT FORM -->
+    <div id="equipmentForm" class="form-container" style="display: none;">
+        <div class="form-header">
+            <h2>Equipment</h2>
+            <button class="btn-new">New</button>
+        </div>
+        <div class="form-content">
+            <div class="form-left">
+                <div class="form-group">
+                    <label>Name?</label>
+                    <input type="text" value="Samsung Monitor 15\"">
+                </div>
+                <div class="form-group">
+                    <label>Equipment Category?</label>
+                    <input type="text" value="Monitors">
+                </div>
+                <div class="form-group">
+                    <label>Company?</label>
+                    <input type="text" value="My Company (San Francisco)">
+                </div>
+                <div class="form-group">
+                    <label>Used By?</label>
+                    <input type="text" value="Employee">
+                </div>
+                <div class="form-group">
+                    <label>Maintenance Team?</label>
+                    <input type="text" value="Internal Maintenance">
+                </div>
+                <div class="form-group">
+                    <label>Assigned Date?</label>
+                    <input type="date" value="2025-12-24">
+                </div>
+                <div class="form-group">
+                    <label>Description</label>
+                    <textarea rows="3"></textarea>
+                </div>
+            </div>
+            <div class="form-right">
+                <div class="form-group">
+                    <label>Technician?</label>
+                    <input type="text" value="Mitchell Admin">
+                </div>
+                <div class="form-group">
+                    <label>Employee?</label>
+                    <input type="text" value="Abigail Peterson">
+                </div>
+                <div class="form-group">
+                    <label>Purchase Date?</label>
+                    <input type="date">
+                </div>
+                <div class="form-group">
+                    <label>Used in Location?</label>
+                    <input type="text">
+                </div>
+                <div class="form-group">
+                    <label>Work Center?</label>
+                    <input type="text">
+                </div>
+            </div>
+        </div>
+        <div class="form-actions">
+            <button type="button" class="btn-submit" onclick="submitEquipment()">Save Equipment</button>
+            <button type="button" class="btn-cancel" onclick="backToEquipmentList()">Cancel</button>
+        </div>
+    </div>
+
+    <!-- TEAMS SECTION -->
+    <div id="teamsContent" class="tab-content">
+        <div class="section-header">
+            <h2>Teams</h2>
+            <button class="btn-new" onclick="showTeamForm()">New</button>
+        </div>
+        <div class="table-container">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Team Name</th>
+                        <th>Team Members</th>
+                        <th>Company</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Internal Maintenance</td>
+                        <td>Anas Makari</td>
+                        <td>My Company (San Francisco)</td>
+                        <td><button class="btn-edit" onclick="editTeam(this)">Edit</button></td>
+                    </tr>
+                    <tr>
+                        <td>Metrology</td>
+                        <td>Marc Demo</td>
+                        <td>My Company (San Francisco)</td>
+                        <td><button class="btn-edit" onclick="editTeam(this)">Edit</button></td>
+                    </tr>
+                    <tr>
+                        <td>Subcontractor</td>
+                        <td>Maggie Davidson</td>
+                        <td>My Company (San Francisco)</td>
+                        <td><button class="btn-edit" onclick="editTeam(this)">Edit</button></td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- TEAM FORM -->
+    <div id="teamForm" class="form-container" style="display: none;">
+        <div class="form-header">
+            <h2>Team Management</h2>
+            <button class="btn-new" onclick="clearTeamForm()">New</button>
+        </div>
+        <div class="form-content">
+            <div class="form-left">
+                <div class="form-group">
+                    <label>Team Name</label>
+                    <input type="text" id="teamName" placeholder="Enter team name">
+                </div>
+                <div class="form-group">
+                    <label>Team Members</label>
+                    <textarea id="teamMembers" rows="3" placeholder="Enter team members (comma separated)"></textarea>
+                </div>
+                <div class="form-group">
+                    <label>Company</label>
+                    <input type="text" id="teamCompany" value="My Company (San Francisco)">
+                </div>
+            </div>
+            <div class="form-right">
+                <div class="form-group">
+                    <label>Team Lead</label>
+                    <input type="text" id="teamLead" placeholder="Team lead name">
+                </div>
+                <div class="form-group">
+                    <label>Department</label>
+                    <select id="teamDepartment">
+                        <option>Maintenance</option>
+                        <option>Operations</option>
+                        <option>Quality</option>
+                        <option>Safety</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Contact Email</label>
+                    <input type="email" id="teamEmail" placeholder="team@company.com">
+                </div>
+            </div>
+        </div>
+        <div class="form-actions">
+            <button type="button" class="btn-submit" onclick="submitTeam()">Save Team</button>
+            <button type="button" class="btn-cancel" onclick="backToTeamsList()">Cancel</button>
+        </div>
+    </div>
+
+    <!-- WORK CENTER SECTION -->
+    <div id="workCenterContent" class="tab-content">
+        <div class="section-header">
+            <h2>Work Center</h2>
+            <button class="btn-new" onclick="showWorkCenterForm()">New</button>
+        </div>
+        <div class="table-container">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Work Center</th>
+                        <th>Code</th>
+                        <th>Tag</th>
+                        <th>Alternative Workcenters</th>
+                        <th>Cost per hour</th>
+                        <th>Capacity Time Efficiency</th>
+                        <th>OEE Target</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Assembly 1</td>
+                        <td>ASM001</td>
+                        <td>Production</td>
+                        <td>Assembly 2</td>
+                        <td>$1.00</td>
+                        <td>100.00%</td>
+                        <td>34.59%</td>
+                        <td><button class="btn-edit" onclick="editWorkCenter(this)">Edit</button></td>
+                    </tr>
+                    <tr>
+                        <td>Drill 1</td>
+                        <td>DRL001</td>
+                        <td>Machining</td>
+                        <td>Drill 2</td>
+                        <td>$1.00</td>
+                        <td>100.00%</td>
+                        <td>90.00%</td>
+                        <td><button class="btn-edit" onclick="editWorkCenter(this)">Edit</button></td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- WORK CENTER FORM -->
+    <div id="workCenterForm" class="form-container" style="display: none;">
+        <div class="form-header">
+            <h2>Work Center Configuration</h2>
+            <button class="btn-new" onclick="clearWorkCenterForm()">New</button>
+        </div>
+        <div class="form-content">
+            <div class="form-left">
+                <div class="form-group">
+                    <label>Work Center Name</label>
+                    <input type="text" id="workCenterName" placeholder="Enter work center name">
+                </div>
+                <div class="form-group">
+                    <label>Code</label>
+                    <input type="text" id="workCenterCode" placeholder="WC001">
+                </div>
+                <div class="form-group">
+                    <label>Tag</label>
+                    <input type="text" id="workCenterTag" placeholder="Production/Maintenance">
+                </div>
+                <div class="form-group">
+                    <label>Alternative Workcenters</label>
+                    <input type="text" id="alternativeWorkcenters" placeholder="Backup work centers">
+                </div>
+            </div>
+            <div class="form-right">
+                <div class="form-group">
+                    <label>Cost per Hour ($)</label>
+                    <input type="number" id="costPerHour" step="0.01" placeholder="1.00">
+                </div>
+                <div class="form-group">
+                    <label>Capacity Time Efficiency (%)</label>
+                    <input type="number" id="capacityEfficiency" step="0.01" placeholder="100.00">
+                </div>
+                <div class="form-group">
+                    <label>OEE Target (%)</label>
+                    <input type="number" id="oeeTarget" step="0.01" placeholder="85.00">
+                </div>
+                <div class="form-group">
+                    <label>Location</label>
+                    <input type="text" id="workCenterLocation" placeholder="Building/Floor">
+                </div>
+            </div>
+        </div>
+        <div class="form-actions">
+            <button type="button" class="btn-submit" onclick="submitWorkCenter()">Save Work Center</button>
+            <button type="button" class="btn-cancel" onclick="backToWorkCenterList()">Cancel</button>
+        </div>
+    </div>
+
+    <!-- NOTIFICATIONS -->
+    <div id="notifications" class="notifications-container"></div>
+
+    <!-- LOADING OVERLAY -->
+    <div id="loadingOverlay" class="loading-overlay" style="display: none;">
+        <div class="loading-spinner"></div>
+        <p>Processing...</p>
+    </div>
+</div>
+
+<script src="script.js"></script>
 </body>
 </html>
