@@ -21,31 +21,27 @@ const KanbanBoard = () => {
   };
 
   const onDragEnd = async (result) => {
-    const { destination, source, draggableId } = result;
+    const { destination, draggableId } = result;
     if (!destination) return;
-
-    const requestId = parseInt(draggableId);
+    const id = parseInt(draggableId);
     const newStage = destination.droppableId;
-
     try {
-      await axios.put(`http://localhost:5000/api/requests/${requestId}`, {
+      await axios.put(`http://localhost:5000/api/requests/${id}`, {
         stage: newStage,
       });
-
-      // Optimistically update frontend state
       setRequests((prev) =>
-        prev.map((r) => (r.id === requestId ? { ...r, stage: newStage } : r))
+        prev.map((r) => (r.id === id ? { ...r, stage: newStage } : r))
       );
     } catch (err) {
-      console.error("Failed to update stage:", err);
+      console.error(err);
     }
   };
-  const isOverdue = (req) => {
-    if (!req.scheduledDate) return false;
-    const now = new Date();
-    const scheduled = new Date(req.scheduledDate);
-    return scheduled < now && req.stage !== "Repaired" && req.stage !== "Scrap";
-  };
+
+  const isOverdue = (req) =>
+    req.scheduledDate &&
+    new Date(req.scheduledDate) < new Date() &&
+    req.stage !== "Repaired" &&
+    req.stage !== "Scrap";
 
   return (
     <div style={{ display: "flex", gap: "16px", padding: "16px" }}>
@@ -59,9 +55,9 @@ const KanbanBoard = () => {
                 style={{
                   flex: 1,
                   minHeight: "300px",
-                  backgroundColor: "#f0f0f0",
-                  borderRadius: "8px",
+                  background: "#f0f0f0",
                   padding: "8px",
+                  borderRadius: "8px",
                 }}
               >
                 <h3 style={{ textAlign: "center" }}>{stage}</h3>
@@ -84,6 +80,8 @@ const KanbanBoard = () => {
                             borderRadius: "4px",
                             backgroundColor: snapshot.isDragging
                               ? "#add8e6"
+                              : isOverdue(req)
+                              ? "#ffcccc"
                               : "#fff",
                             boxShadow: "0 1px 3px rgba(0,0,0,0.2)",
                             ...provided.draggableProps.style,

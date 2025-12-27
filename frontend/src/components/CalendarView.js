@@ -24,7 +24,6 @@ const CalendarView = () => {
 
   const handleDateClick = (date) => {
     setSelectedDate(date);
-    // Logic to open modal/form for new preventive request
     alert(`Create preventive request for ${date.toDateString()}`);
   };
 
