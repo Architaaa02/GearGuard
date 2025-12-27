@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GearGuard - Login</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: Arial, sans-serif; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); min-height: 100vh; display: flex; align-items: center; justify-content: center; }
+        .container { background: white; padding: 40px; border-radius: 10px; box-shadow: 0 15px 35px rgba(0,0,0,0.1); width: 400px; }
+        .logo { text-align: center; margin-bottom: 30px; }
+        .logo h1 { color: #333; font-size: 2.5em; margin-bottom: 5px; }
+        .logo p { color: #666; font-size: 0.9em; }
+        .form-group { margin-bottom: 20px; }
+        .form-group input { width: 100%; padding: 12px; border: 2px solid #ddd; border-radius: 5px; font-size: 16px; }
+        .form-group input:focus { outline: none; border-color: #667eea; }
+        .btn-primary { width: 100%; padding: 12px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; border: none; border-radius: 5px; font-size: 16px; cursor: pointer; }
+        .btn-primary:hover { transform: translateY(-2px); }
+        .switch-form { text-align: center; margin-top: 20px; color: #666; }
+        .switch-form a { color: #667eea; text-decoration: none; }
+        .hidden { display: none; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="logo">
+            <h1>GearGuard</h1>
+            <p>The Ultimate Maintenance Tracker</p>
+        </div>
+        
+        <form id="loginForm">
+            <h2 style="text-align: center; margin-bottom: 30px; color: #333;">Login</h2>
+            <div class="form-group">
+                <input type="email" id="loginEmail" placeholder="Email" required>
+            </div>
+            <div class="form-group">
+                <input type="password" id="loginPassword" placeholder="Password" required>
+            </div>
+            <button type="submit" class="btn-primary">Login</button>
+            <p class="switch-form">Don't have an account? <a href="#" onclick="showSignup()">Sign Up</a></p>
+        </form>
+
+        <form id="signupForm" class="hidden">
+            <h2 style="text-align: center; margin-bottom: 30px; color: #333;">Sign Up</h2>
+            <div class="form-group">
+                <input type="text" id="signupName" placeholder="Full Name" required>
+            </div>
+            <div class="form-group">
+                <input type="email" id="signupEmail" placeholder="Email" required>
+            </div>
+            <div class="form-group">
+                <input type="password" id="signupPassword" placeholder="Password" required>
+            </div>
+            <div class="form-group">
+                <input type="password" id="confirmPassword" placeholder="Confirm Password" required>
+            </div>
+            <button type="submit" class="btn-primary">Sign Up</button>
+            <p class="switch-form">Already have an account? <a href="#" onclick="showLogin()">Login</a></p>
+        </form>
+    </div>
+
+    <script>
+        function showLogin() {
+            document.getElementById('loginForm').classList.remove('hidden');
+            document.getElementById('signupForm').classList.add('hidden');
+        }
+        function showSignup() {
+            document.getElementById('loginForm').classList.add('hidden');
+            document.getElementById('signupForm').classList.remove('hidden');
+        }
+        
+        document.getElementById('loginForm').onsubmit = function(e) {
+            e.preventDefault();
+            const email = document.getElementById('loginEmail').value;
+            const password = document.getElementById('loginPassword').value;
+            if (email && password) {
+                localStorage.setItem('isLoggedIn', 'true');
+                localStorage.setItem('userName', email.split('@')[0]);
+                window.location.href = 'dashboard.html';
+            }
+        };
+        
+        document.getElementById('signupForm').onsubmit = function(e) {
+            e.preventDefault();
+            const name = document.getElementById('signupName').value;
+            const email = document.getElementById('signupEmail').value;
+            const password = document.getElementById('signupPassword').value;
+            const confirm = document.getElementById('confirmPassword').value;
+            if (name && email && password && confirm && password === confirm) {
+                alert('Account created! Please login.');
+                showLogin();
+            }
+        };
+    </script>
+</body>
+</html>
